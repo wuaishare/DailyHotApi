@@ -2,6 +2,7 @@ import { fileURLToPath } from "url";
 import { config } from "./config.js";
 import { Hono } from "hono";
 import getRSS from "./utils/getRSS.js";
+import { normalizeCoverUrls } from "./utils/normalizeUrl.js";
 import path from "path";
 import fs from "fs";
 
@@ -70,6 +71,10 @@ for (let index = 0; index < allRoutePath.length; index++) {
     // 获取路由路径
     const { handleRoute } = await import(`./routes/${router}.js`);
     const listData = await handleRoute(c, noCache);
+    // 统一处理封面图 URL：将 HTTP 转换为 HTTPS
+    if (listData?.data && Array.isArray(listData.data)) {
+      listData.data = normalizeCoverUrls(listData.data);
+    }
     // 是否限制条目
     if (limit && listData?.data?.length > parseInt(limit)) {
       listData.total = parseInt(limit);

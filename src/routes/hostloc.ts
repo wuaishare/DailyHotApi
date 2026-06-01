@@ -48,7 +48,14 @@ const getList = async (options: Options, noCache: boolean) => {
       message: "Hostloc did not return a public RSS feed for anonymous requests",
     };
   }
-  const list = await parseRSS(result.data);
+  const list = await parseRSS(result.data).catch(() => []);
+  if (!list.length) {
+    return {
+      ...result,
+      data: [],
+      message: "Hostloc did not return a public RSS feed for anonymous requests",
+    };
+  }
   return {
     ...result,
     data: list.map((v, i) => ({

@@ -3,13 +3,21 @@ import { get } from "../utils/getData.js";
 import { genHeaders } from "../utils/getToken/coolapk.js";
 import { getTime } from "../utils/getTime.js";
 import { parseRSS } from "../utils/parseRSS.js";
+import {
+  firstHtmlParagraphText,
+  htmlToText,
+  normalizeText,
+  stripLeadingTags,
+  truncateText,
+} from "../utils/text.js";
 
 export const handleRoute = async (_: undefined, noCache: boolean) => {
   const listData = await getList(noCache);
   const routeData: RouterData = {
     name: "coolapk",
     title: "酷安",
-    type: "热榜",
+    type: "热门动态",
+    description: "酷安今日热门动态",
     link: "https://www.coolapk.com/",
     total: listData.data?.length || 0,
     ...listData,
@@ -43,10 +51,10 @@ const getList = async (noCache: boolean) => {
       ...result,
       data: list.map((v) => ({
         id: v.id,
-        title: v.message,
+        title: buildCoolapkTitle(v.message || v.ttitle),
         cover: v.tpic,
         author: v.username,
-        desc: v.ttitle,
+        desc: buildCoolapkDesc(v.ttitle || v.message),
         timestamp: undefined,
         hot: undefined,
         url: v.shareUrl,
@@ -63,12 +71,14 @@ const getList = async (noCache: boolean) => {
     const list = await parseRSS(result.data);
     const data: ListItem[] = list.map((v, i) => {
       const cover = v.content?.match(/<img[^>]+src="([^"]+)"/i)?.[1];
+      const desc =
+        firstHtmlParagraphText(v.content) || htmlToText(v.contentSnippet);
       return {
         id: v.guid || v.link || i,
-        title: v.title || "",
+        title: buildCoolapkTitle(desc || v.title),
         cover,
         author: v.author || "",
-        desc: v.contentSnippet || "",
+        desc: buildCoolapkDesc(desc),
         timestamp: getTime(v.pubDate || 0),
         hot: undefined,
         url: v.link || "",
@@ -82,3 +92,15 @@ const getList = async (noCache: boolean) => {
     };
   }
 };
+
+const buildCoolapkTitle = (text?: string) => {
+  const normalized = normalizeText(text);
+  const bracketTitle = normalized.match(/^[「『〖【\[]\s*(.+?)\s*[」』〗】\]]/);
+  const cleaned = bracketTitle?.[1] || stripLeadingTags(normalized);
+  const firstSentence =
+    cleaned.split(/[。！？\n]/).find((part) => part.trim()) || cleaned;
+  return truncateText(firstSentence, 48);
+};
+
+const buildCoolapkDesc = (text?: string) =>
+  truncateText(stripLeadingTags(text), 160);

@@ -25,14 +25,16 @@ const getList = async (noCache: boolean) => {
   const result = await get<string>({ url, noCache });
   const $ = load(result.data);
 
-  const container = $('div[data-news-pane-id="100000"]');
-  const listDom = container.find("article.feed-item");
+  const listDom = $("article.feed-item");
 
-  const listData = Array.from(listDom).map((el) => {
+  const listData = Array.from(listDom).flatMap((el) => {
     const dom = $(el);
 
     const titleEl = dom.find(".feed-item-title-a").first();
     const title = titleEl.text().trim();
+    if (!title) {
+      return [];
+    }
 
     const href = titleEl.attr("href");
     const url = href?.startsWith("http") ? href : `https://www.gameres.com${href ?? ""}`;

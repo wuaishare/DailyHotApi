@@ -25,38 +25,46 @@ export const handleRoute = async (_: undefined, noCache: boolean) => {
   return routeData;
 };
 
-interface EarthquakeItem {
-  NEW_DID: string;
-  LOCATION_C: string;
-  M: string;
-  O_TIME: string;
-  [key: string]: string;
+interface EarthquakeItem extends Record<string, string> {
+  EventID: string;
+  time: string;
+  ReportTime: string;
+  location: string;
+  placeName: string;
+  magnitude: string;
+  depth: string;
+  latitude: string;
+  longitude: string;
+  intensity: string;
 }
 
 const getList = async (noCache: boolean) => {
-  const url = `https://news.ceic.ac.cn/speedsearch.html`;
-  const result = await get<string>({ url, noCache });
-  const regex = /const newdata = (\[.*?\]);/s;
-  const match = result.data.match(regex);
-  const list: EarthquakeItem[] = match && match[1] ? JSON.parse(match[1]) : [];
+  const url = "https://api.wolfx.jp/cenc_eqlist.json";
+  const result = await get<Record<string, EarthquakeItem>>({ url, noCache, ttl: 300 });
+  const list = Object.values(result.data);
   return {
     ...result,
     data: list.map((v) => {
       const contentBuilder: string[] = [];
-      const { NEW_DID, LOCATION_C, M } = v;
-      for (const mappingsKey in mappings) {
-        contentBuilder.push(
-          `${mappings[mappingsKey]}：${v[mappingsKey]}`,
-        );
-      }
+      const normalized = {
+        NEW_DID: v.EventID,
+        LOCATION_C: v.location || v.placeName,
+        M: v.magnitude,
+        O_TIME: v.time,
+        EPI_LAT: v.latitude,
+        EPI_LON: v.longitude,
+        EPI_DEPTH: v.depth,
+        SAVE_TIME: v.ReportTime,
+      };
+      for (const mappingsKey in mappings) contentBuilder.push(`${mappings[mappingsKey]}：${normalized[mappingsKey as keyof typeof normalized]}`);
       return {
-        id: NEW_DID,
-        title: `${LOCATION_C}发生${M}级地震`,
+        id: v.EventID,
+        title: `${normalized.LOCATION_C}发生${v.magnitude}级地震`,
         desc: contentBuilder.join("\n"),
-        timestamp: getTime(v["O_TIME"]),
+        timestamp: getTime(v.time),
         hot: undefined,
-        url: `https://news.ceic.ac.cn/${NEW_DID}.html`,
-        mobileUrl: `https://news.ceic.ac.cn/${NEW_DID}.html`,
+        url: `https://news.ceic.ac.cn/${v.EventID}.html`,
+        mobileUrl: `https://news.ceic.ac.cn/${v.EventID}.html`,
       };
     }),
   };

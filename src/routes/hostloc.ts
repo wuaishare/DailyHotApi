@@ -37,10 +37,17 @@ const getList = async (options: Options, noCache: boolean) => {
     url,
     noCache,
     headers: {
-      userAgent:
+      "User-Agent":
         "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Mobile Safari/537.36",
     },
   });
+  if (!result.data.includes("<rss")) {
+    return {
+      ...result,
+      data: [],
+      message: "Hostloc did not return a public RSS feed for anonymous requests",
+    };
+  }
   const list = await parseRSS(result.data);
   return {
     ...result,

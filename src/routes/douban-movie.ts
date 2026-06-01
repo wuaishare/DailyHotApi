@@ -2,7 +2,7 @@ import type { ListContext, RouterData, RouterResType } from "../types.js";
 import { get } from "../utils/getData.js";
 
 const typeMap: Record<string, string> = {
-  movie_showing: "影院热映",
+  movie_showing: "热映",
   movie_hot_gaia: "热门电影",
   movie_hot: "新片榜",
   movie_latest: "最新电影",
@@ -106,6 +106,12 @@ const buildTitle = (item: DoubanItem) => {
   return item.title || "";
 };
 
+const buildCover = (item: DoubanItem) => {
+  const cover = item.cover?.url || item.pic?.large || item.pic?.normal;
+  if (!cover) return undefined;
+  return cover.replace(/^https:\/\/img[239]\.doubanio\.com\//, "https://img1.doubanio.com/");
+};
+
 const buildLink = (item: DoubanItem) => {
   const id = getNumbers(item.id);
   if (id) {
@@ -140,7 +146,7 @@ const getList = async (type: string, noCache: boolean): Promise<RouterResType> =
       return {
         id: item.id || `${type}-${index + 1}`,
         title: buildTitle(item),
-        cover: item.cover?.url || item.pic?.large || item.pic?.normal,
+        cover: buildCover(item),
         desc: buildDesc(item),
         timestamp: undefined,
         hot: item.rating?.count || undefined,

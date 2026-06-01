@@ -6,7 +6,7 @@ const typeMap: Record<string, string> = {
   movie_hot_gaia: "热门电影",
   movie_hot: "新片榜",
   movie_latest: "最新电影",
-  tv_hot: "最近热门电视剧",
+  tv_hot: "电视剧综合",
   tv_domestic: "国产剧",
   show_hot: "综艺",
   tv_american: "欧美剧",

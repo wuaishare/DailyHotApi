@@ -1,4 +1,4 @@
-import type { RouterData, ListContext, Options } from "../types.js";
+import type { RouterData, ListContext, Options, RouterResType } from "../types.js";
 import { get } from "../utils/getData.js";
 import { parseRSS } from "../utils/parseRSS.js";
 import { getTime } from "../utils/getTime.js";
@@ -33,6 +33,12 @@ export const handleRoute = async (c: ListContext, noCache: boolean) => {
 const getList = async (options: Options, noCache: boolean) => {
   const { type } = options;
   const url = `https://hostloc.com/forum.php?mod=guide&view=${type}&rss=1`;
+  const unavailable: RouterResType = {
+    fromCache: false,
+    updateTime: new Date().toISOString(),
+    data: [],
+    message: "Hostloc did not return a public RSS feed for anonymous requests",
+  };
   const result = await get<string>({
     url,
     noCache,
@@ -40,20 +46,18 @@ const getList = async (options: Options, noCache: boolean) => {
       "User-Agent":
         "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Mobile Safari/537.36",
     },
-  });
-  if (!result.data.includes("<rss")) {
+  }).catch(() => unavailable);
+  if (typeof result.data !== "string" || !result.data.includes("<rss")) {
     return {
       ...result,
-      data: [],
-      message: "Hostloc did not return a public RSS feed for anonymous requests",
+      ...unavailable,
     };
   }
   const list = await parseRSS(result.data).catch(() => []);
   if (!list.length) {
     return {
       ...result,
-      data: [],
-      message: "Hostloc did not return a public RSS feed for anonymous requests",
+      ...unavailable,
     };
   }
   return {

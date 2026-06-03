@@ -31,10 +31,11 @@ app.use(
     origin: (origin) => {
       // 是否指定域名
       const isSame = config.ALLOWED_HOST && origin.endsWith(config.ALLOWED_HOST);
-      return isSame ? origin : config.ALLOWED_DOMAIN;
+      if (isSame || config.ALLOWED_DOMAIN === "*") return origin;
+      return config.ALLOWED_DOMAIN;
     },
     allowMethods: ["POST", "GET", "OPTIONS"],
-    allowHeaders: ["X-Custom-Header", "Upgrade-Insecure-Requests"],
+    allowHeaders: ["Content-Type", "Authorization", "X-Custom-Header", "Upgrade-Insecure-Requests"],
     credentials: true,
   }),
 );

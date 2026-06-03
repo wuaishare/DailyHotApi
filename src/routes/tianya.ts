@@ -64,7 +64,7 @@ export const handleRoute = async (c: ListContext, noCache: boolean) => {
   const listData = await getList(type, noCache);
   const routeData: RouterData = {
     name: "tianya",
-    title: "天涯",
+    title: "天涯社区",
     type: typeMap[type],
     description: "天涯社区官方 tianya.net 已恢复开放的天涯荟萃数据",
     params: {

@@ -19,10 +19,36 @@ const getRequestPath = (c: ListContext) => {
   return `${url.pathname}${url.search}`;
 };
 
+const hasValidProxyToken = (c: ListContext) =>
+  config.INTERNAL_PROXY_TOKEN &&
+  c.req.header("x-internal-proxy-token") === config.INTERNAL_PROXY_TOKEN;
+
+const hasAllowedAnalyticsOrigin = (c: ListContext) => {
+  const allowedHosts = config.ANALYTICS_ALLOWED_HOSTS.split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+  if (!allowedHosts.length) return false;
+  const origin = c.req.header("origin") || "";
+  const referer = c.req.header("referer") || "";
+  return allowedHosts.some((host) => origin.includes(host) || referer.includes(host));
+};
+
 export const handleRoute = async (c: ListContext) => {
   const method = c.req.method.toUpperCase();
 
   if (method === "POST") {
+    if (!hasValidProxyToken(c) && !hasAllowedAnalyticsOrigin(c)) {
+      return {
+        name: "analytics",
+        title: "Analytics",
+        type: "collect",
+        total: 0,
+        updateTime: new Date().toISOString(),
+        fromCache: false,
+        data: [],
+        message: "Forbidden",
+      };
+    }
     const payload = (await c.req.json()) as AnalyticsEventPayload;
     const userAgent = c.req.header("user-agent") || "";
     const { ipHash, uaHash } = buildAnalyticsIdentity(getClientIp(c), userAgent);

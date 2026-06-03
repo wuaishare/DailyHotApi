@@ -21,6 +21,8 @@ export type Config = {
   ANALYTICS_SALT: string;
   ANALYTICS_USE_FILE: boolean;
   ANALYTICS_ADMIN_TOKEN: string;
+  ANALYTICS_ALLOWED_HOSTS: string;
+  INTERNAL_PROXY_TOKEN: string;
 };
 
 // 验证并提取环境变量
@@ -63,4 +65,6 @@ export const config: Config = {
   ANALYTICS_SALT: getEnvVariable("ANALYTICS_SALT") || "dailyhot-analytics-salt",
   ANALYTICS_USE_FILE: getBooleanEnvVariable("ANALYTICS_USE_FILE", true),
   ANALYTICS_ADMIN_TOKEN: getEnvVariable("ANALYTICS_ADMIN_TOKEN") || "",
+  ANALYTICS_ALLOWED_HOSTS: getEnvVariable("ANALYTICS_ALLOWED_HOSTS") || "",
+  INTERNAL_PROXY_TOKEN: getEnvVariable("INTERNAL_PROXY_TOKEN") || "",
 };

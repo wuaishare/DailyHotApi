@@ -1,4 +1,5 @@
 import type { ListContext } from "../types.js";
+import { config } from "../config.js";
 import {
   appendAnalyticsEvent,
   buildAnalyticsDashboard,
@@ -45,6 +46,21 @@ export const handleRoute = async (c: ListContext) => {
       fromCache: false,
       data: [],
       message: "ok",
+    };
+  }
+
+  const authHeader = c.req.header("authorization") || "";
+  const token = authHeader.replace(/^Bearer\s+/i, "").trim();
+  if (!config.ANALYTICS_ADMIN_TOKEN || token !== config.ANALYTICS_ADMIN_TOKEN) {
+    return {
+      name: "analytics",
+      title: "Analytics",
+      type: "dashboard",
+      total: 0,
+      updateTime: new Date().toISOString(),
+      fromCache: false,
+      data: [],
+      message: "Unauthorized",
     };
   }
 

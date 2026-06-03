@@ -20,6 +20,7 @@ export type Config = {
   FILTER_WEIBO_ADVERTISEMENT: boolean;
   ANALYTICS_SALT: string;
   ANALYTICS_USE_FILE: boolean;
+  ANALYTICS_ADMIN_TOKEN: string;
 };
 
 // 验证并提取环境变量
@@ -61,4 +62,5 @@ export const config: Config = {
   FILTER_WEIBO_ADVERTISEMENT: getBooleanEnvVariable("FILTER_WEIBO_ADVERTISEMENT", false),
   ANALYTICS_SALT: getEnvVariable("ANALYTICS_SALT") || "dailyhot-analytics-salt",
   ANALYTICS_USE_FILE: getBooleanEnvVariable("ANALYTICS_USE_FILE", true),
+  ANALYTICS_ADMIN_TOKEN: getEnvVariable("ANALYTICS_ADMIN_TOKEN") || "",
 };

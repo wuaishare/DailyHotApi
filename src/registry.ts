@@ -60,8 +60,7 @@ for (let index = 0; index < allRoutePath.length; index++) {
     continue;
   }
   const listApp = app.basePath(`/${router}`);
-  // 返回榜单
-  listApp.get("/", async (c) => {
+  const handleRequest = async (c: any) => {
     // 是否采用缓存
     const noCache = c.req.query("cache") === "false";
     // 限制显示条目
@@ -88,7 +87,10 @@ for (let index = 0; index < allRoutePath.length; index++) {
       }
     }
     return c.json({ code: 200, ...listData });
-  });
+  };
+  // 返回榜单
+  listApp.get("/", handleRequest);
+  listApp.post("/", handleRequest);
   // 请求方式错误
   listApp.all("*", (c) => c.json({ code: 405, message: "Method Not Allowed" }, 405));
 }

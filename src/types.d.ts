@@ -34,6 +34,7 @@ export interface RouterData extends RouterResType {
   params?: Record<string, string | object>;
   total: number;
   link?: string;
+  dashboard?: unknown;
 }
 
 // 请求类型

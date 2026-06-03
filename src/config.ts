@@ -18,6 +18,8 @@ export type Config = {
   REDIS_DB: number;
   ZHIHU_COOKIE: string;
   FILTER_WEIBO_ADVERTISEMENT: boolean;
+  ANALYTICS_SALT: string;
+  ANALYTICS_USE_FILE: boolean;
 };
 
 // 验证并提取环境变量
@@ -57,4 +59,6 @@ export const config: Config = {
   REDIS_DB:  getNumericEnvVariable("REDIS_DB", 0),
   ZHIHU_COOKIE: getEnvVariable("ZHIHU_COOKIE") || "",
   FILTER_WEIBO_ADVERTISEMENT: getBooleanEnvVariable("FILTER_WEIBO_ADVERTISEMENT", false),
+  ANALYTICS_SALT: getEnvVariable("ANALYTICS_SALT") || "dailyhot-analytics-salt",
+  ANALYTICS_USE_FILE: getBooleanEnvVariable("ANALYTICS_USE_FILE", true),
 };

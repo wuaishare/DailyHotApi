@@ -41,13 +41,19 @@ const getList = async (noCache: boolean) => {
   const result = await get<string>({
     url,
     noCache,
+    responseType: "text",
     headers: {
       "User-Agent": userAgent.toString(),
     },
   });
   const listData: ListItem[] = [];
   // 获取主要内容
-  const html = result.data || "";
+  const html =
+    typeof result.data === "string"
+      ? result.data
+      : typeof result.data === "object" && result.data !== null
+        ? JSON.stringify(result.data)
+        : String(result.data || "");
   const start = html.indexOf(APOLLO_STATE_PREFIX);
   if (start === -1) {
     throw new Error("快手页面结构变更，未找到 APOLLO_STATE");

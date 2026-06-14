@@ -54,6 +54,9 @@ const getList = async (noCache: boolean) => {
       : typeof result.data === "object" && result.data !== null
         ? JSON.stringify(result.data)
         : String(result.data || "");
+  if (html.startsWith("{") && html.includes("\"result\"")) {
+    throw new Error(`快手返回了非页面响应，疑似触发风控: ${html.slice(0, 200)}`);
+  }
   const start = html.indexOf(APOLLO_STATE_PREFIX);
   if (start === -1) {
     throw new Error("快手页面结构变更，未找到 APOLLO_STATE");

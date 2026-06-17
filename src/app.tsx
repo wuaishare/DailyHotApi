@@ -29,6 +29,9 @@ app.use(
   cors({
     // 可写为数组
     origin: (origin) => {
+      if (!origin) {
+        return config.ALLOWED_DOMAIN === "*" ? "*" : config.ALLOWED_DOMAIN;
+      }
       // 是否指定域名
       const isSame = config.ALLOWED_HOST && origin.endsWith(config.ALLOWED_HOST);
       if (isSame || config.ALLOWED_DOMAIN === "*") return origin;

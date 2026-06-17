@@ -195,6 +195,7 @@
   - `llm-stats`
   - `skills-rank`
 - 技能 / 插件
+  - `clawhub`
   - `clawhub-skills`
   - `clawhub-plugins`
 - 官方资讯
@@ -228,7 +229,7 @@
 ### 当前结论摘要
 
 - 如果目标是「先把 AI 圈的一手内容做出来」，第一阶段已经完成一批可用来源：  
-  `OpenRouter / ClawHub Skills / ClawHub Plugins / Hugging Face Models / Hugging Face Trending Papers / OpenAI News / OpenAI Research / Anthropic News / DeepMind Blog / Meta AI / DesignArena / Artificial Analysis / LMArena / AICPB / LLM Stats / Skills Rank / Product Hunt AI / Hacker News AI / 新浪 AI 热榜`
+  `OpenRouter / ClawHub / Hugging Face Models / Hugging Face Trending Papers / OpenAI News / OpenAI Research / Anthropic News / DeepMind Blog / Meta AI / DesignArena / Artificial Analysis / LMArena / AICPB / LLM Stats / Skills Rank / Product Hunt AI / Hacker News AI / 新浪 AI 热榜`
 - 如果目标是「继续补足模型榜单权威感和社区面」，下一阶段优先打通：
   - `Reddit` 三条社区热议
   - `Perplexity / xAI` 官方内容面

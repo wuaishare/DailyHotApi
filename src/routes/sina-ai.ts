@@ -5,7 +5,7 @@ import { get } from "../utils/getData.js";
 const meta = {
   name: "sina-ai",
   title: "新浪 AI",
-  type: "官方资讯",
+  type: "中文 AI 资讯热榜",
   description: "新浪 AI 热榜，补充中文 AI 资讯视角",
   link: "https://sinanews.sina.cn/",
 };

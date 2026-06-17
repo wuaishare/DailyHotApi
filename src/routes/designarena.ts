@@ -65,7 +65,7 @@ export const handleRoute = async (c: RouterData | any, noCache: boolean) => {
   return createRouteData(
     {
       ...meta,
-      type: `排行榜 · ${typeMap[category] || category}`,
+      type: `${typeMap[category] || category} 模型榜`,
       params: {
         type: {
           name: "榜单分类",

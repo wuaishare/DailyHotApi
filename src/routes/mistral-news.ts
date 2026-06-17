@@ -5,7 +5,7 @@ import { load } from "cheerio";
 const meta = {
   name: "mistral-news",
   title: "Mistral",
-  type: "官方资讯",
+  type: "官方新闻",
   description: "Mistral 官方新闻与产品更新",
   link: "https://mistral.ai/news",
 };

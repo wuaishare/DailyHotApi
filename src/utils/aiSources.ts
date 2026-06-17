@@ -24,6 +24,7 @@ export interface AiRouteMeta {
 export const createRouteData = (meta: AiRouteMeta, listData: { data: ListItem[]; fromCache: boolean; updateTime: string | number; message?: string; params?: Record<string, string | object> }) => {
   const routeData: RouterData = {
     ...meta,
+    subtitle: meta.type,
     total: listData.data?.length || 0,
     ...listData,
   };

@@ -8,7 +8,7 @@ import { createRouteData, findCoverFromHtml, keywordFilter } from "../utils/aiSo
 const meta = {
   name: "producthunt-ai",
   title: "Product Hunt",
-  type: "产品发现",
+  type: "AI 新品发现",
   description: "Product Hunt 中与 AI 相关的产品发现流",
   link: "https://www.producthunt.com/topics/artificial-intelligence",
 };

@@ -6,7 +6,7 @@ import { load } from "cheerio";
 const meta = {
   name: "anthropic-news",
   title: "Anthropic",
-  type: "官方资讯",
+  type: "官方新闻",
   description: "Anthropic 官方新闻与发布动态",
   link: "https://www.anthropic.com/news",
 };

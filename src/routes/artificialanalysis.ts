@@ -4,7 +4,7 @@ import { createRouteData, getHtml, parseFirstTable, textToHot } from "../utils/a
 const meta = {
   name: "artificialanalysis",
   title: "Artificial Analysis",
-  type: "排行榜",
+  type: "模型综合评测榜",
   description: "Artificial Analysis 大模型综合排行榜",
   link: "https://artificialanalysis.ai/leaderboards/models",
 };

@@ -4,7 +4,7 @@ import { createRouteData, getHtml, parseFirstTable, textToHot } from "../utils/a
 const meta = {
   name: "skills-rank",
   title: "Skills Rank",
-  type: "排行榜",
+  type: "Agent Skills 安装榜",
   description: "Agent Skills 安装量排行榜",
   link: "https://skills-rank.com/",
 };

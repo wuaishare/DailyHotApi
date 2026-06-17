@@ -4,7 +4,7 @@ import { createRouteData, extractJsonLd, getHtml, textToHot } from "../utils/aiS
 const meta = {
   name: "aicpb-rankings",
   title: "AICPB",
-  type: "排行榜",
+  type: "全球 AI 产品热度榜",
   description: "AICPB 全球 AI 产品排行榜",
   link: "https://www.aicpb.com/ai-rankings/products/global-ai-rankings",
 };

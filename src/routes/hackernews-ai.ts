@@ -6,7 +6,7 @@ import { createRouteData, keywordFilter, stripHtml } from "../utils/aiSources.js
 const meta = {
   name: "hackernews-ai",
   title: "Hacker News",
-  type: "社区热议",
+  type: "AI 热门讨论",
   description: "Hacker News 上的 AI 热门讨论",
   link: "https://news.ycombinator.com/",
 };

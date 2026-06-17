@@ -41,6 +41,36 @@ export interface RequestResult<T = unknown> {
   data: T;
 }
 
+const sortObject = (value: unknown): unknown => {
+  if (Array.isArray(value)) return value.map(sortObject);
+  if (value && typeof value === "object" && !Buffer.isBuffer(value)) {
+    return Object.keys(value as Record<string, unknown>)
+      .sort()
+      .reduce<Record<string, unknown>>((acc, key) => {
+        acc[key] = sortObject((value as Record<string, unknown>)[key]);
+        return acc;
+      }, {});
+  }
+  return value;
+};
+
+const buildCacheKey = (
+  method: "GET" | "POST",
+  url: string,
+  params?: Record<string, unknown>,
+  body?: unknown,
+) => {
+  const parts = [`${method}:${url}`];
+  if (params && Object.keys(params).length) {
+    parts.push(`params=${JSON.stringify(sortObject(params))}`);
+  }
+  if (typeof body !== "undefined") {
+    const normalizedBody = Buffer.isBuffer(body) ? `buffer:${body.length}` : sortObject(body);
+    parts.push(`body=${JSON.stringify(normalizedBody)}`);
+  }
+  return parts.join("::");
+};
+
 // GET
 export const get = async <T = unknown>(options: Get): Promise<RequestResult<T>> => {
   const {
@@ -53,12 +83,13 @@ export const get = async <T = unknown>(options: Get): Promise<RequestResult<T>> 
     originaInfo = false,
     responseType = "json",
   } = options;
+  const cacheKey = buildCacheKey("GET", url, params);
   logger.info(`🌐 [GET] ${url}`);
   try {
     // 检查缓存
-    if (noCache) await delCache(url);
+    if (noCache) await delCache(cacheKey);
     else {
-      const cachedData = await getCache(url);
+      const cachedData = await getCache(cacheKey);
       if (cachedData) {
         logger.info("💾 [CHCHE] The request is cached");
         return {
@@ -74,7 +105,7 @@ export const get = async <T = unknown>(options: Get): Promise<RequestResult<T>> 
     // 存储新获取的数据到缓存
     const updateTime = new Date().toISOString();
     const data = originaInfo ? response : responseData;
-    await setCache(url, { data, updateTime }, ttl);
+    await setCache(cacheKey, { data, updateTime }, ttl);
     // 返回数据
     logger.info(`✅ [${response?.status}] request was successful`);
     return { fromCache: false, updateTime, data: data as T };
@@ -88,12 +119,13 @@ export const get = async <T = unknown>(options: Get): Promise<RequestResult<T>> 
 export const post = async <T = unknown>(options: Post): Promise<RequestResult<T>> => {
   const { url, headers, body, timeout, noCache, ttl = config.CACHE_TTL, originaInfo = false } =
     options;
+  const cacheKey = buildCacheKey("POST", url, undefined, body);
   logger.info(`🌐 [POST] ${url}`);
   try {
     // 检查缓存
-    if (noCache) await delCache(url);
+    if (noCache) await delCache(cacheKey);
     else {
-      const cachedData = await getCache(url);
+      const cachedData = await getCache(cacheKey);
       if (cachedData) {
         logger.info("💾 [CHCHE] The request is cached");
         return { fromCache: true, updateTime: cachedData.updateTime, data: cachedData.data as T };
@@ -106,7 +138,7 @@ export const post = async <T = unknown>(options: Post): Promise<RequestResult<T>
     const updateTime = new Date().toISOString();
     const data = originaInfo ? response : responseData;
     if (!noCache) {
-      await setCache(url, { data, updateTime }, ttl);
+      await setCache(cacheKey, { data, updateTime }, ttl);
     }
     // 返回数据
     logger.info(`✅ [${response?.status}] request was successful`);

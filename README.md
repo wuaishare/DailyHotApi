@@ -187,12 +187,16 @@
 #### 已接入（P0 第一阶段）
 
 - 排行榜
+  - `openrouter-rankings`
   - `designarena`
   - `artificialanalysis`
   - `lmarena`
   - `aicpb-rankings`
   - `llm-stats`
   - `skills-rank`
+- 技能 / 插件
+  - `clawhub-skills`
+  - `clawhub-plugins`
 - 官方资讯
   - `openai-news`
   - `openai-research`
@@ -211,11 +215,6 @@
   - `producthunt-ai`
   - `hackernews-ai`
 
-#### 已接入官方 API 但仍需补配置
-
-- `openrouter-rankings`
-- 说明：已切换至 OpenRouter 官方 `datasets/rankings-daily`，当前需要补充 `OPENROUTER_API_KEY` 才能稳定返回生产数据。
-
 #### 已预留路由但暂未稳定打通
 
 - `perplexity-blog`
@@ -223,14 +222,31 @@
 - `reddit-localllama`
 - `reddit-machinelearning`
 - `reddit-artificial`
+- `clawhub-plugins` 的 `official` 与大部分分类筛选
+  - 说明：官方前端页面存在，但服务端直连这些子榜时返回 500；当前前端只展示已验证可用的插件子榜，后端预留逻辑已保留。
 
 ### 当前结论摘要
 
 - 如果目标是「先把 AI 圈的一手内容做出来」，第一阶段已经完成一批可用来源：  
-  `Hugging Face Models / Hugging Face Trending Papers / OpenAI News / Anthropic News / DeepMind Blog / DesignArena / Artificial Analysis / LMArena / AICPB / LLM Stats / Skills Rank / Product Hunt AI / Hacker News AI / 新浪 AI 热榜`
+  `OpenRouter / ClawHub Skills / ClawHub Plugins / Hugging Face Models / Hugging Face Trending Papers / OpenAI News / OpenAI Research / Anthropic News / DeepMind Blog / Meta AI / DesignArena / Artificial Analysis / LMArena / AICPB / LLM Stats / Skills Rank / Product Hunt AI / Hacker News AI / 新浪 AI 热榜`
 - 如果目标是「继续补足模型榜单权威感和社区面」，下一阶段优先打通：
-  - `OpenRouter Rankings`
   - `Reddit` 三条社区热议
+  - `Perplexity / xAI` 官方内容面
+
+### 下一波高价值来源建议
+
+- `Google AI / Google Developers AI`
+  - 适合补 Gemini、Vertex AI、A2A、开发者能力更新。
+- `Microsoft AI / Azure AI / Microsoft Research`
+  - 适合补 Copilot、Phi、企业落地、研究进展。
+- `NVIDIA Technical Blog / Research`
+  - 适合补推理基础设施、NIM、TensorRT-LLM、GPU 工程实践。
+- `Qwen / ModelScope`
+  - 适合补中文 AI 圈一手模型与开源生态动态。
+- `LangChain / LangGraph`
+  - 适合补 Agent 应用层工具链更新。
+- `vLLM / Ollama / Open WebUI`
+  - 适合补本地部署和开源推理生态中的高实用内容。
 
 ## ⚙️ 使用
 

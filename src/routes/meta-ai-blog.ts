@@ -4,7 +4,7 @@ import type { ListItem } from "../types.js";
 const meta = {
   name: "meta-ai-blog",
   title: "Meta AI",
-  type: "官方资讯",
+  type: "官方 AI 动态",
   description: "Meta 官方 AI 动态与 Llama 相关新闻",
   link: "https://about.fb.com/news/",
 };

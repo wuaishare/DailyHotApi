@@ -5,7 +5,7 @@ import { load } from "cheerio";
 const meta = {
   name: "lmarena",
   title: "LMArena",
-  type: "排行榜",
+  type: "模型偏好对战榜",
   description: "LMArena 文本模型对战排行榜",
   link: "https://lmarena.ai/leaderboard/text",
 };

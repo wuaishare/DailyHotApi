@@ -30,6 +30,7 @@ export interface RouterData extends RouterResType {
   name: string;
   title: string;
   type: string;
+  subtitle?: string;
   description?: string;
   params?: Record<string, string | object>;
   total: number;

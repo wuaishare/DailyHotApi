@@ -5,7 +5,7 @@ import { load } from "cheerio";
 const meta = {
   name: "llm-stats",
   title: "LLM Stats",
-  type: "排行榜",
+  type: "模型性能 / 价格榜",
   description: "LLM Stats 模型性能与价格排行榜",
   link: "https://llm-stats.com/",
 };

@@ -82,6 +82,154 @@
 
 </details>
 
+## 🧠 AI 信息源扩展规划（2026-06）
+
+> 本节用于沉淀后续准备接入的 AI 圈一手新闻 / 榜单 / 排行源，避免候选源只停留在聊天记录里。
+
+### 当前项目内已存在的 AI 相关入口
+
+- `sina?type=ai`
+  - 已有「新浪 AI 热榜」分类，属于偏媒体聚合源。
+- `producthunt`
+  - 已有 Product Hunt 官方 Feed 路由，适合做 AI 新产品发布观察，但当前不是 AI 专题化视图。
+- `hackernews`
+  - 已有 Hacker News 热门页路由，适合做 AI 创业 / 开源 / Agent 讨论补充源，但不是 AI 垂直榜单。
+- `hellogithub`
+  - 已有开源发现类入口，可作为 AI 开源项目出圈后的补充观察源。
+
+### 来自 `ai.wuaishare.cn` 历史资料的已知候选源
+
+以下候选不是本轮临时拍脑袋补充，而是能在既有资料中找到明确线索：
+
+- `Product Hunt AI Topic`
+  - 在 `ai.wuaishare.cn/data/hub-sourceflow-golden-cases-2026-05.json` 中已经作为 `secondary_directory` 的 `graduation_cases` 出现。
+  - 角色定义偏「可信二级目录 / 榜单」，适合做发现源，但落库前要回查主源。
+- `There’s An AI For That`
+  - 同样在 `secondary_directory` 中出现，定位也是发现型二级目录。
+  - 适合作为补充发现面，不适合当唯一事实源。
+- `OpenRouter`
+  - 你这次补充提到过，且从产品定位上更适合作为“真实调用热度 / 使用分布”榜单源。
+- `designarena.ai`
+  - 你这次补充提到过；建议按“设计类 AI 工具生态 / 榜单 / 目录”候选源单独评估，而不是直接并入模型评测榜。
+- `appstoreprice.org`
+  - 你这次补充提到过；更像价格 / 上架 / 变价信号源，适合作为产品发现补充，不适合独立承担 AI 圈主榜。
+
+### 这次调研后的候选平台结论
+
+| 平台 | 官方入口 | 更适合的内容定位 | 接入难度 | 优先级 | 备注 |
+| --- | --- | --- | --- | --- | --- |
+| Hugging Face Models | `https://huggingface.co/models` | 新模型发布、开源模型热度、社区关注度 | 低 | P0 | 页面可直接看到 `Sort: Trending`，非常适合首批接入 |
+| Hugging Face Trending Papers | `https://huggingface.co/papers/trending` | AI 论文热度、研究社区关注、论文配套 GitHub / arXiv | 低 | P0 | 一手研究源价值很高，列表结构完整 |
+| LMArena Text Leaderboard | `https://lmarena.ai/leaderboard/text` | 大模型综合对战榜、用户投票偏好、模型口碑 | 中 | P1 | 官方权威度高，适合做模型能力榜单 |
+| Artificial Analysis LLM Leaderboard | `https://artificialanalysis.ai/leaderboards/models` | 模型综合评测、价格、速度、上下文、延迟 | 中 | P1 | 非常适合做“模型参数/能力/成本”型榜单 |
+| OpenRouter Rankings | `https://openrouter.ai/rankings` | 模型真实调用热度、市场份额、工具调用 / 图像调用使用情况 | 中偏高 | P1 | 更偏“真实使用分布”，适合与评测榜形成互补 |
+| Product Hunt AI Topic | `https://www.producthunt.com/topics/artificial-intelligence` | AI 产品首发、工具发布、独立开发者新品 | 高 | P2 | 当前环境下会遇到 Cloudflare 挑战，专题页抓取稳定性一般 |
+| designarena.ai | `https://designarena.ai/` | 设计类 AI 工具发现、专题目录、视觉创作生态观察 | 待确认 | P2 | 先做源形态与结构化程度评估，再决定是否进主榜 |
+| appstoreprice.org | `https://appstoreprice.org/` | 上架、价格、折扣、变价等产品信号补充 | 待确认 | P3 | 更适合作为补充信号源，而不是主内容榜 |
+
+### 不建议首批投入的方向
+
+- 泛 AI 工具目录站
+  - 例如单纯做 SEO 聚合的 AI 工具导航站，虽然流量大，但不够“一手”，更适合作为补充而不是核心源。
+- 纯关键词热搜但无稳定正文链接或无明确来源归属的榜单
+  - 容易变成泛热点，不利于建立 AI 圈垂直内容心智。
+- 未经主源回查的二级目录
+  - 例如 Product Hunt AI Topic、There’s An AI For That 这类“发现源”，可以用于发现候选对象，但不要直接当事实源落库。
+
+### 推荐的接入批次
+
+#### 第一批：先做稳定、低成本、强 AI 垂直感知
+
+1. `hf-models`
+   - 目标：模型趋势榜
+   - 核心字段：模型名、任务类型、更新时间、点赞 / 下载 / 热度、模型页链接
+2. `hf-papers`
+   - 目标：AI 论文热度榜
+   - 核心字段：论文标题、摘要、机构 / 作者、发布日期、GitHub、arXiv、点赞 / upvote
+3. `sina?type=ai`
+   - 目标：继续保留中文媒体侧 AI 热点补充
+   - 作用：给中文用户快速补足行业新闻面
+
+#### 第二批：补足模型榜单权威性
+
+1. `lmarena`
+   - 目标：模型对战榜 / 用户投票榜
+2. `artificial-analysis`
+   - 目标：模型综合评测榜
+3. `openrouter-rankings`
+   - 目标：模型真实调用热度榜
+
+#### 第三批：补足产品发布面
+
+1. `producthunt-ai`
+   - 目标：AI 新产品发布榜
+   - 前提：解决 Cloudflare / 抓取稳定性问题
+2. `hackernews-ai`
+   - 目标：通过关键词 / 域名 / 主题过滤形成 AI 创业与开源讨论流
+   - 前提：明确筛选规则，避免把非 AI 内容误收入榜
+3. `designarena-ai`
+   - 目标：设计类 AI 工具发现与专题补充
+   - 前提：先确认是否存在可稳定抓取的公开榜单 / 分类页 / JSON
+4. `appstoreprice-ai`
+   - 目标：AI 产品价格 / 折扣 / 上架动态补充
+   - 前提：明确 AI 相关筛选规则，避免退化成泛 App 价格站镜像
+
+### 设计原则
+
+- 优先一手源：优先官方榜单、官方趋势页、官方研究 / 模型 / 排名页
+- 优先结构化：优先能稳定拿到标题、链接、摘要、时间、热度、封面 / Logo 的源
+- 优先 AI 垂直：优先模型、论文、Agent、AI 产品发布，而不是泛科技热榜
+- 优先可维护：首批尽量避免重度反爬、强交互、登录态依赖过高的页面
+- 二级目录只做发现，不直接当事实真源：如果来源本身是目录站 / 榜单站，落库或发布前必须能回查官方主源
+
+### 当前接入状态
+
+#### 已接入（P0 第一阶段）
+
+- 排行榜
+  - `designarena`
+  - `artificialanalysis`
+  - `lmarena`
+  - `aicpb-rankings`
+  - `llm-stats`
+  - `skills-rank`
+- 官方资讯
+  - `openai-news`
+  - `anthropic-news`
+  - `deepmind-blog`
+  - `huggingface-blog`
+  - `mistral-news`
+  - `cohere-blog`
+  - `sina-ai`
+- 开源 / 论文
+  - `hf-models`
+  - `hf-papers`
+- 产品发现 / 社区热议
+  - `producthunt-ai`
+  - `hackernews-ai`
+
+#### 已预留路由但暂未稳定打通
+
+- `openrouter-rankings`
+- `openai-research`
+- `meta-ai-blog`
+- `perplexity-blog`
+- `xai-news`
+- `reddit-localllama`
+- `reddit-machinelearning`
+- `reddit-artificial`
+- `paperswithcode`
+
+### 当前结论摘要
+
+- 如果目标是「先把 AI 圈的一手内容做出来」，第一阶段已经完成一批可用来源：  
+  `Hugging Face Models / Hugging Face Trending Papers / OpenAI News / Anthropic News / DeepMind Blog / DesignArena / Artificial Analysis / LMArena / AICPB / LLM Stats / Skills Rank / Product Hunt AI / Hacker News AI / 新浪 AI 热榜`
+- 如果目标是「继续补足模型榜单权威感和社区面」，下一阶段优先打通：
+  - `OpenRouter Rankings`
+  - `OpenAI Research`
+  - `Meta AI Blog`
+  - `Reddit` 三条社区热议
+
 ## ⚙️ 使用
 
 本项目支持 `Node.js` 调用，可在安装完成后调用 `serveHotApi` 来开启服务器

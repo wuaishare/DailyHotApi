@@ -195,8 +195,10 @@
   - `skills-rank`
 - 官方资讯
   - `openai-news`
+  - `openai-research`
   - `anthropic-news`
   - `deepmind-blog`
+  - `meta-ai-blog`
   - `huggingface-blog`
   - `mistral-news`
   - `cohere-blog`
@@ -204,21 +206,23 @@
 - 开源 / 论文
   - `hf-models`
   - `hf-papers`
+  - `paperswithcode`
 - 产品发现 / 社区热议
   - `producthunt-ai`
   - `hackernews-ai`
 
-#### 已预留路由但暂未稳定打通
+#### 已接入官方 API 但仍需补配置
 
 - `openrouter-rankings`
-- `openai-research`
-- `meta-ai-blog`
+- 说明：已切换至 OpenRouter 官方 `datasets/rankings-daily`，当前需要补充 `OPENROUTER_API_KEY` 才能稳定返回生产数据。
+
+#### 已预留路由但暂未稳定打通
+
 - `perplexity-blog`
 - `xai-news`
 - `reddit-localllama`
 - `reddit-machinelearning`
 - `reddit-artificial`
-- `paperswithcode`
 
 ### 当前结论摘要
 
@@ -226,8 +230,6 @@
   `Hugging Face Models / Hugging Face Trending Papers / OpenAI News / Anthropic News / DeepMind Blog / DesignArena / Artificial Analysis / LMArena / AICPB / LLM Stats / Skills Rank / Product Hunt AI / Hacker News AI / 新浪 AI 热榜`
 - 如果目标是「继续补足模型榜单权威感和社区面」，下一阶段优先打通：
   - `OpenRouter Rankings`
-  - `OpenAI Research`
-  - `Meta AI Blog`
   - `Reddit` 三条社区热议
 
 ## ⚙️ 使用

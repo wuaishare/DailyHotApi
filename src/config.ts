@@ -23,6 +23,7 @@ export type Config = {
   ANALYTICS_ADMIN_TOKEN: string;
   ANALYTICS_ALLOWED_HOSTS: string;
   INTERNAL_PROXY_TOKEN: string;
+  OPENROUTER_API_KEY: string;
 };
 
 // 验证并提取环境变量
@@ -67,4 +68,5 @@ export const config: Config = {
   ANALYTICS_ADMIN_TOKEN: getEnvVariable("ANALYTICS_ADMIN_TOKEN") || "",
   ANALYTICS_ALLOWED_HOSTS: getEnvVariable("ANALYTICS_ALLOWED_HOSTS") || "",
   INTERNAL_PROXY_TOKEN: getEnvVariable("INTERNAL_PROXY_TOKEN") || "",
+  OPENROUTER_API_KEY: getEnvVariable("OPENROUTER_API_KEY") || "",
 };

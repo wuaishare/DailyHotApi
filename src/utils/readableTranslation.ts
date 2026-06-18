@@ -1,5 +1,6 @@
 import type { ListItem } from "../types.js";
 import { post } from "./getData.js";
+import { getCache, setCache } from "./cache.js";
 
 const TARGET_LANGUAGE_MAP: Record<string, string> = {
   "zh-CN": "chinese_simplified",
@@ -31,6 +32,7 @@ const TRANSLATE_ENDPOINTS = [
   "https://api.translate.zvo.cn/translate.json",
   "https://america.api.translate.zvo.cn/translate.json",
 ];
+const READABLE_TITLE_CACHE_TTL = 7 * 24 * 60 * 60;
 
 const chunkTitles = (titles: string[], size = 5) => {
   const chunks: string[][] = [];
@@ -48,6 +50,9 @@ const looksTranslatableSentence = (text = "") => {
   return text.length >= 24 || wordCount >= 4;
 };
 
+const buildTitleCacheKey = (locale: string, title: string) =>
+  `readable-title:${locale}:${title}`;
+
 const translateTitles = async (
   titles: string[],
   locale: string,
@@ -57,7 +62,19 @@ const translateTitles = async (
   if (!targetLanguage || !titles.length) return new Map<string, string>();
 
   const translatedMap = new Map<string, string>();
-  for (const titleChunk of chunkTitles(titles, 5)) {
+  const uncachedTitles: string[] = [];
+
+  for (const title of titles) {
+    const cached = await getCache(buildTitleCacheKey(locale, title));
+    const cachedValue = String(cached?.data || "").trim();
+    if (cachedValue) {
+      translatedMap.set(title, cachedValue);
+      continue;
+    }
+    uncachedTitles.push(title);
+  }
+
+  for (const titleChunk of chunkTitles(uncachedTitles, 3)) {
     const payload = new URLSearchParams();
     payload.set("from", "auto");
     payload.set("to", targetLanguage);
@@ -72,18 +89,27 @@ const translateTitles = async (
           url: endpoint,
           body: payload.toString(),
           noCache: true,
+          timeout: 15000,
           headers: {
             "content-type": "application/x-www-form-urlencoded",
           },
         });
 
         if (result?.data?.result === 1 && Array.isArray(result?.data?.text)) {
-          titleChunk.forEach((title, index) => {
+          for (const [index, title] of titleChunk.entries()) {
             const translated = String(result.data.text?.[index] || "").trim();
             if (translated && translated !== title) {
               translatedMap.set(title, translated);
+              await setCache(
+                buildTitleCacheKey(locale, title),
+                {
+                  updateTime: new Date().toISOString(),
+                  data: translated,
+                },
+                READABLE_TITLE_CACHE_TTL
+              );
             }
-          });
+          }
           break;
         }
       } catch {

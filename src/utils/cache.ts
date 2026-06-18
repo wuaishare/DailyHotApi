@@ -18,7 +18,7 @@ const cache = new NodeCache({
   // 克隆变量
   useClones: false,
   // 最大键值对
-  maxKeys: 100,
+  maxKeys: 5000,
 });
 
 // init Redis client
@@ -107,20 +107,33 @@ export const setCache = async (
   value: CacheData,
   ttl: number = config.CACHE_TTL,
 ): Promise<boolean> => {
+  await ensureRedisConnection();
+  let redisSuccess = false;
   // 尝试写入 Redis
   if (isRedisAvailable && !Buffer.isBuffer(value?.data)) {
     try {
       await redis.set(key, stringify(value), "EX", ttl);
       if (logger) logger.info(`💾 [REDIS] ${key} has been cached`);
+      redisSuccess = true;
     } catch (error) {
       logger.error(
         `📦 [Redis] set error: ${error instanceof Error ? error.message : "Unknown error"}`,
       );
     }
   }
-  const success = cache.set(key, value, ttl);
-  if (logger) logger.info(`💾 [NodeCache] ${key} has been cached`);
-  return success;
+  if (redisSuccess) {
+    return true;
+  }
+  try {
+    const success = cache.set(key, value, ttl);
+    if (logger) logger.info(`💾 [NodeCache] ${key} has been cached`);
+    return success;
+  } catch (error) {
+    logger.error(
+      `📦 [NodeCache] set error: ${error instanceof Error ? error.message : "Unknown error"}`,
+    );
+    return false;
+  }
 };
 
 /**
@@ -129,6 +142,7 @@ export const setCache = async (
  * @returns 是否删除成功
  */
 export const delCache = async (key: string): Promise<boolean> => {
+  await ensureRedisConnection();
   let redisSuccess = true;
   try {
     await redis.del(key);

@@ -8,11 +8,13 @@ const TARGET_LANGUAGE_MAP: Record<string, string> = {
 };
 
 const READABLE_TRANSLATION_SOURCES = new Set([
+  "openai",
   "openai-news",
   "openai-research",
   "anthropic-news",
   "deepmind-blog",
   "meta-ai-blog",
+  "huggingface",
   "huggingface-blog",
   "mistral-news",
   "cohere-blog",

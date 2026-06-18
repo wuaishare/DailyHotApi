@@ -13,26 +13,32 @@ const meta = {
 export const handleRoute = async (_: undefined, noCache: boolean) => {
   const result = await getHtml(meta.link, noCache);
   const $ = load(result.data);
-  const seen = new Set<string>();
+  const candidateMap = new Map<string, { title: string; url: string }>();
   const data: ListItem[] = [];
-  $('a[href*="/blog/"], a[href*="/research/"]').each((index, el) => {
-    if (index > 29) return false;
+  $('a[href*="/blog/"], a[href*="/research/"]').each((_, el) => {
     const href = $(el).attr("href") || "";
     const title = $(el).text().replace(/\s+/g, " ").trim();
-    if (!href || !title || seen.has(href)) return;
+    if (!href || !title) return;
     if (/^\/(blog|research)$/.test(href)) return;
     if (/^\/blog\/tag\//.test(href) || /^\/blog\/authors\//.test(href)) return;
+    if (/^learn more$/i.test(title)) return;
+    if (/^(blog|research|papers)$/i.test(title)) return;
     if (title.length < 8) return;
-    seen.add(href);
     const url = makeAbsoluteUrl(href, "https://cohere.com");
+    const current = candidateMap.get(href);
+    if (!current || title.length > current.title.length) {
+      candidateMap.set(href, { title, url });
+    }
+  });
+  [...candidateMap.values()].slice(0, 30).forEach((item, index) => {
     data.push({
       id: `cohere-${index}`,
-      title,
+      title: item.title,
       desc: "Cohere 官方博客",
       hot: undefined,
       timestamp: undefined,
-      url,
-      mobileUrl: url,
+      url: item.url,
+      mobileUrl: item.url,
     });
   });
   return createRouteData(meta, {

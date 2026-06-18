@@ -22,6 +22,7 @@ const getList = async (noCache: boolean) => {
   const result = await get<string>({
     url,
     noCache,
+    timeout: 20000,
     headers: {
       "Accept": "application/rss+xml, application/xml;q=0.9, */*;q=0.8",
       "User-Agent":

@@ -1,5 +1,5 @@
 import type { ListItem } from "../types.js";
-import { post } from "./getData.js";
+import { get, post } from "./getData.js";
 import { getCache, setCache } from "./cache.js";
 
 const TARGET_LANGUAGE_MAP: Record<string, string> = {
@@ -33,6 +33,10 @@ const TRANSLATE_ENDPOINTS = [
   "https://america.api.translate.zvo.cn/translate.json",
 ];
 const READABLE_TITLE_CACHE_TTL = 7 * 24 * 60 * 60;
+const GOOGLE_TRANSLATE_TARGET_MAP: Record<string, string> = {
+  "zh-CN": "zh-CN",
+  "zh-TW": "zh-TW",
+};
 
 const chunkTitles = (titles: string[], size = 5) => {
   const chunks: string[][] = [];
@@ -160,6 +164,43 @@ const translateSingleTitle = async (title: string, locale: string) => {
     } catch {
       continue;
     }
+  }
+
+  const googleTargetLanguage = GOOGLE_TRANSLATE_TARGET_MAP[locale];
+  if (!googleTargetLanguage) return "";
+
+  try {
+    const googleResult = await get<any[]>({
+      url: "https://translate.googleapis.com/translate_a/single",
+      params: {
+        client: "gtx",
+        sl: "auto",
+        tl: googleTargetLanguage,
+        dt: "t",
+        q: title,
+      },
+      noCache: true,
+      timeout: 10000,
+    });
+    const translated = Array.isArray(googleResult?.data?.[0])
+      ? googleResult.data[0]
+          .map((item: any[]) => String(item?.[0] || ""))
+          .join("")
+          .trim()
+      : "";
+    if (translated && translated !== title) {
+      await setCache(
+        buildTitleCacheKey(locale, title),
+        {
+          updateTime: new Date().toISOString(),
+          data: translated,
+        },
+        READABLE_TITLE_CACHE_TTL
+      );
+      return translated;
+    }
+  } catch {
+    return "";
   }
 
   return "";

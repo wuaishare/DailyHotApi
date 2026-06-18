@@ -121,6 +121,50 @@ const translateTitles = async (
   return translatedMap;
 };
 
+const translateSingleTitle = async (title: string, locale: string) => {
+  const targetLanguage = TARGET_LANGUAGE_MAP[locale];
+  if (!targetLanguage) return "";
+
+  const payload = new URLSearchParams();
+  payload.set("from", "auto");
+  payload.set("to", targetLanguage);
+  payload.set("text", JSON.stringify([title]));
+
+  for (const endpoint of TRANSLATE_ENDPOINTS) {
+    try {
+      const result = await post<{
+        result: number;
+        text?: string[];
+      }>({
+        url: endpoint,
+        body: payload.toString(),
+        noCache: true,
+        timeout: 15000,
+        headers: {
+          "content-type": "application/x-www-form-urlencoded",
+        },
+      });
+
+      const translated = String(result?.data?.text?.[0] || "").trim();
+      if (result?.data?.result === 1 && translated && translated !== title) {
+        await setCache(
+          buildTitleCacheKey(locale, title),
+          {
+            updateTime: new Date().toISOString(),
+            data: translated,
+          },
+          READABLE_TITLE_CACHE_TTL
+        );
+        return translated;
+      }
+    } catch {
+      continue;
+    }
+  }
+
+  return "";
+};
+
 export const applyReadableTitleEnhancement = async ({
   sourceName,
   locale,
@@ -156,6 +200,13 @@ export const applyReadableTitleEnhancement = async ({
   if (!titles.length) return data;
 
   const translatedMap = await translateTitles(titles, locale, noCache);
+  const unresolvedTitles = titles.filter((title) => !translatedMap.has(title));
+  for (const title of unresolvedTitles) {
+    const translated = await translateSingleTitle(title, locale);
+    if (translated) {
+      translatedMap.set(title, translated);
+    }
+  }
   if (!translatedMap.size) return data;
 
   return data.map((item, index) => {

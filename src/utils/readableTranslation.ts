@@ -51,7 +51,7 @@ const looksTranslatableSentence = (text = "") => {
 const translateTitles = async (
   titles: string[],
   locale: string,
-  noCache: boolean
+  _noCache: boolean
 ) => {
   const targetLanguage = TARGET_LANGUAGE_MAP[locale];
   if (!targetLanguage || !titles.length) return new Map<string, string>();
@@ -71,7 +71,7 @@ const translateTitles = async (
         }>({
           url: endpoint,
           body: payload.toString(),
-          noCache,
+          noCache: true,
           headers: {
             "content-type": "application/x-www-form-urlencoded",
           },

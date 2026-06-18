@@ -86,18 +86,14 @@ export const get = async <T = unknown>(options: Get): Promise<RequestResult<T>> 
   const cacheKey = buildCacheKey("GET", url, params);
   logger.info(`🌐 [GET] ${url}`);
   try {
-    // 检查缓存
-    if (noCache) await delCache(cacheKey);
-    else {
-      const cachedData = await getCache(cacheKey);
-      if (cachedData) {
-        logger.info("💾 [CHCHE] The request is cached");
-        return {
-          fromCache: true,
-          updateTime: cachedData.updateTime,
-          data: cachedData.data as T,
-        };
-      }
+    const cachedData = await getCache(cacheKey);
+    if (!noCache && cachedData) {
+      logger.info("💾 [CHCHE] The request is cached");
+      return {
+        fromCache: true,
+        updateTime: cachedData.updateTime,
+        data: cachedData.data as T,
+      };
     }
     // 缓存不存在时请求接口
     const response = await request.get(url, { headers, params, responseType, timeout });
@@ -110,6 +106,15 @@ export const get = async <T = unknown>(options: Get): Promise<RequestResult<T>> 
     logger.info(`✅ [${response?.status}] request was successful`);
     return { fromCache: false, updateTime, data: data as T };
   } catch (error) {
+    const cachedData = await getCache(cacheKey);
+    if (cachedData) {
+      logger.warn(`⚠️ [STALE CACHE] ${url} request failed, fallback to cached data`);
+      return {
+        fromCache: true,
+        updateTime: cachedData.updateTime,
+        data: cachedData.data as T,
+      };
+    }
     logger.error("❌ [ERROR] request failed");
     throw error;
   }
@@ -122,14 +127,10 @@ export const post = async <T = unknown>(options: Post): Promise<RequestResult<T>
   const cacheKey = buildCacheKey("POST", url, undefined, body);
   logger.info(`🌐 [POST] ${url}`);
   try {
-    // 检查缓存
-    if (noCache) await delCache(cacheKey);
-    else {
-      const cachedData = await getCache(cacheKey);
-      if (cachedData) {
-        logger.info("💾 [CHCHE] The request is cached");
-        return { fromCache: true, updateTime: cachedData.updateTime, data: cachedData.data as T };
-      }
+    const cachedData = await getCache(cacheKey);
+    if (!noCache && cachedData) {
+      logger.info("💾 [CHCHE] The request is cached");
+      return { fromCache: true, updateTime: cachedData.updateTime, data: cachedData.data as T };
     }
     // 缓存不存在时请求接口
     const response = await request.post(url, body, { headers, timeout });
@@ -137,13 +138,16 @@ export const post = async <T = unknown>(options: Post): Promise<RequestResult<T>
     // 存储新获取的数据到缓存
     const updateTime = new Date().toISOString();
     const data = originaInfo ? response : responseData;
-    if (!noCache) {
-      await setCache(cacheKey, { data, updateTime }, ttl);
-    }
+    await setCache(cacheKey, { data, updateTime }, ttl);
     // 返回数据
     logger.info(`✅ [${response?.status}] request was successful`);
     return { fromCache: false, updateTime, data: data as T };
   } catch (error) {
+    const cachedData = await getCache(cacheKey);
+    if (cachedData) {
+      logger.warn(`⚠️ [STALE CACHE] ${url} request failed, fallback to cached data`);
+      return { fromCache: true, updateTime: cachedData.updateTime, data: cachedData.data as T };
+    }
     logger.error("❌ [ERROR] request failed");
     throw error;
   }

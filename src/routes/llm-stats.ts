@@ -66,6 +66,88 @@ const buildRowDescription = (values: string[]) => {
   return unique.slice(0, 5).join(" · ");
 };
 
+const parseScenarioRow = (
+  cols: any,
+  $: any,
+  index: number
+): ListItem | null => {
+  const modelCell = cols.eq(0);
+  const modelLink = modelCell.find('a[href^="/models/"]').first();
+  const title = cleanText(modelLink.text());
+  const href = modelLink.attr("href") || "";
+  if (!title || !href) return null;
+
+  const provider = cleanText(modelCell.find("div").last().text());
+  const summary = cleanText(cols.eq(1).text());
+  const strengths = cleanText(cols.eq(2).text());
+  const caveat = cleanText(cols.eq(3).text());
+  const pricingCell = cols.eq(4).clone();
+  pricingCell.find("div").remove();
+  const pricing = cleanText(pricingCell.text());
+  const contextWindow = cleanText(cols.eq(4).find("div").text());
+
+  return {
+    id: `${title}-${index}`,
+    title,
+    desc: buildRowDescription([
+      provider,
+      summary,
+      strengths,
+      caveat,
+      [pricing, contextWindow].filter(Boolean).join(" · "),
+    ]),
+    hot: textToHot(String(index + 1)),
+    timestamp: undefined,
+    url: href.startsWith("http") ? href : `https://llm-stats.com${href}`,
+    mobileUrl: href.startsWith("http") ? href : `https://llm-stats.com${href}`,
+  } satisfies ListItem;
+};
+
+const parseLeaderboardRow = (
+  cols: any,
+  row: any,
+  $: any,
+  index: number
+): ListItem | null => {
+  const modelLink = $(row).find('a[href^="/models/"]').first();
+  const title = cleanText(modelLink.text());
+  const href = modelLink.attr("href") || "";
+  if (!title || !href) return null;
+
+  const country = cleanText(cols.eq(2).text());
+  const license = cleanText(cols.eq(3).text());
+  const contextWindow = cleanText(cols.eq(4).text());
+  const inputPrice = cleanText(cols.eq(5).text());
+  const outputPrice = cleanText(cols.eq(6).text());
+  const throughput = cleanText(cols.eq(7).text());
+  const releaseDate = cleanText(cols.eq(cols.length - 2).text());
+  const provider = cleanText(cols.eq(cols.length - 1).text());
+  const pricing =
+    inputPrice || outputPrice
+      ? [inputPrice ? `输入 ${inputPrice}` : "", outputPrice ? `输出 ${outputPrice}` : ""]
+          .filter(Boolean)
+          .join(" / ")
+      : "";
+
+  return {
+    id: `${title}-${index}`,
+    title,
+    desc: buildRowDescription([
+      provider,
+      country,
+      license,
+      contextWindow ? `上下文 ${contextWindow}` : "",
+      pricing,
+      throughput ? `速度 ${throughput}` : "",
+      releaseDate ? `发布 ${releaseDate}` : "",
+    ]),
+    hot: textToHot(String(index + 1)),
+    timestamp: undefined,
+    url: href.startsWith("http") ? href : `https://llm-stats.com${href}`,
+    mobileUrl: href.startsWith("http") ? href : `https://llm-stats.com${href}`,
+  } satisfies ListItem;
+};
+
 export const handleRoute = async (
   c: { req?: { query?: (key: string) => string | undefined } },
   noCache: boolean
@@ -80,37 +162,10 @@ export const handleRoute = async (
     .map((row, index) => {
       const cols = $(row).find("td");
       if (!cols.length) return null;
-
-      const modelCell = cols.eq(0);
-      const modelLink = modelCell.find('a[href^="/models/"]').first();
-      const title = cleanText(modelLink.text());
-      const href = modelLink.attr("href") || "";
-      if (!title || !href) return null;
-
-      const provider = cleanText(modelCell.find("div").last().text());
-      const summary = cleanText(cols.eq(1).text());
-      const strengths = cleanText(cols.eq(2).text());
-      const caveat = cleanText(cols.eq(3).text());
-      const pricingCell = cols.eq(4).clone();
-      pricingCell.find("div").remove();
-      const pricing = cleanText(pricingCell.text());
-      const contextWindow = cleanText(cols.eq(4).find("div").text());
-
-      return {
-        id: `${title}-${index}`,
-        title,
-        desc: buildRowDescription([
-          provider,
-          summary,
-          strengths,
-          caveat,
-          [pricing, contextWindow].filter(Boolean).join(" · "),
-        ]),
-        hot: textToHot(String(index + 1)),
-        timestamp: undefined,
-        url: href.startsWith("http") ? href : `https://llm-stats.com${href}`,
-        mobileUrl: href.startsWith("http") ? href : `https://llm-stats.com${href}`,
-      } satisfies ListItem;
+      if (cols.length >= 40) {
+        return parseLeaderboardRow(cols, row, $, index);
+      }
+      return parseScenarioRow(cols, $, index);
     });
 
   return createRouteData(

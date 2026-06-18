@@ -3,6 +3,7 @@ import { config } from "./config.js";
 import { Hono } from "hono";
 import getRSS from "./utils/getRSS.js";
 import { normalizeCoverUrls } from "./utils/normalizeUrl.js";
+import { applyReadableTitleEnhancement } from "./utils/readableTranslation.js";
 import path from "path";
 import fs from "fs";
 
@@ -65,6 +66,9 @@ for (let index = 0; index < allRoutePath.length; index++) {
     const noCache = c.req.query("cache") === "false";
     // 限制显示条目
     const limit = c.req.query("limit");
+    const locale = c.req.query("locale");
+    const translateLimit = c.req.query("translate_limit");
+    const translateOffset = c.req.query("translate_offset");
     // 是否输出 RSS
     const rssEnabled = c.req.query("rss") === "true";
     // 获取路由路径
@@ -75,6 +79,16 @@ for (let index = 0; index < allRoutePath.length; index++) {
     if (limit && listData?.data?.length > parseInt(limit)) {
       listData.total = parseInt(limit);
       listData.data = listData.data.slice(0, parseInt(limit));
+    }
+    if (Array.isArray(listData?.data)) {
+      listData.data = await applyReadableTitleEnhancement({
+        sourceName: router,
+        locale: locale || undefined,
+        noCache,
+        data: listData.data,
+        offset: translateOffset ? parseInt(translateOffset) : 0,
+        limit: translateLimit ? parseInt(translateLimit) : 0,
+      });
     }
     // 是否输出 RSS
     if (rssEnabled || config.RSS_MODE) {

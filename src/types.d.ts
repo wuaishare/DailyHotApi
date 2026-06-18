@@ -8,6 +8,7 @@ export type ListContext = Context;
 export interface ListItem {
   id: number | string;
   title: string;
+  originalTitle?: string;
   cover?: string;
   author?: string;
   desc?: string;

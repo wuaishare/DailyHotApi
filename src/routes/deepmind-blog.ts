@@ -2,7 +2,7 @@ import { createRouteData, getHtml, mapRssToListItems } from "../utils/aiSources.
 
 const meta = {
   name: "deepmind-blog",
-  title: "Google DeepMind",
+  title: "DeepMind",
   type: "官方博客",
   description: "Google DeepMind 官方新闻与研究博客",
   link: "https://deepmind.google/blog/",

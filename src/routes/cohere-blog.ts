@@ -5,7 +5,7 @@ import { load } from "cheerio";
 const meta = {
   name: "cohere-blog",
   title: "Cohere",
-  type: "官方资讯",
+  type: "官方博客",
   description: "Cohere 官方博客与研究更新",
   link: "https://cohere.com/blog",
 };

@@ -5,8 +5,8 @@ import { load } from "cheerio";
 const meta = {
   name: "paperswithcode",
   title: "Papers with Code",
-  type: "论文与代码趋势榜",
-  description: "Papers with Code 热门论文与代码（当前由 Hugging Face Trending Papers 承载）",
+  type: "论文代码镜像榜",
+  description: "Papers with Code 镜像流，当前由 Hugging Face Trending Papers 承载",
   link: "https://huggingface.co/papers/trending",
 };
 

@@ -4,9 +4,9 @@ import { load } from "cheerio";
 
 const meta = {
   name: "openai-research",
-  title: "OpenAI Research",
-  type: "官方研究更新",
-  description: "OpenAI 官方研究更新",
+  title: "OpenAI",
+  type: "官方研究",
+  description: "OpenAI 官方研究与技术更新",
   link: "https://openai.com/research/",
 };
 

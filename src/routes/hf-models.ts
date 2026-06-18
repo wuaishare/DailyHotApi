@@ -4,7 +4,7 @@ import { load } from "cheerio";
 
 const meta = {
   name: "hf-models",
-  title: "Hugging Face Models",
+  title: "Hugging Face",
   type: "开源模型趋势榜",
   description: "Hugging Face 模型趋势榜",
   link: "https://huggingface.co/models?sort=trending",

@@ -4,7 +4,7 @@ import { load } from "cheerio";
 
 const meta = {
   name: "hf-papers",
-  title: "Hugging Face Papers",
+  title: "Hugging Face",
   type: "热门论文趋势榜",
   description: "Hugging Face 热门论文榜",
   link: "https://huggingface.co/papers/trending",

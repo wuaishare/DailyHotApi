@@ -51,16 +51,24 @@ const getList = async (noCache: boolean) => {
     },
   });
   const list = result.data.result[0];
+  const seen = new Set<string>();
   return {
     ...result,
-    data: list.map((v) => ({
-      id: v.tid,
-      title: v.subject,
-      author: v.author,
-      hot: v.replies,
-      timestamp: getTime(v.postdate),
-      url: `https://bbs.nga.cn${v.tpcurl}`,
-      mobileUrl: `https://bbs.nga.cn${v.tpcurl}`,
-    })),
+    data: list
+      .filter((v) => {
+        const key = String(v.tid || v.tpcurl || v.subject);
+        if (!key || seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      })
+      .map((v) => ({
+        id: v.tid,
+        title: v.subject,
+        author: v.author,
+        hot: v.replies,
+        timestamp: getTime(v.postdate),
+        url: `https://bbs.nga.cn${v.tpcurl}`,
+        mobileUrl: `https://bbs.nga.cn${v.tpcurl}`,
+      })),
   };
 };

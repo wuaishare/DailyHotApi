@@ -46,11 +46,21 @@ const getList = async (options: Options, noCache: boolean) => {
   const result = await get<HistoryResponse>({
     url,
     noCache,
+    timeout: 15000,
+    headers: {
+      Referer: "https://baike.baidu.com/calendar",
+      "User-Agent":
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36",
+      Accept: "application/json,text/plain,*/*",
+    },
     params: {
       _: new Date().getTime(),
     },
   });
-  const list = monthStr ? result.data[monthStr][monthStr + dayStr] : [];
+  const list =
+    monthStr && result?.data?.[monthStr]?.[monthStr + dayStr]
+      ? result.data[monthStr][monthStr + dayStr]
+      : [];
   return {
     ...result,
     data: list.map((v, index: number) => ({

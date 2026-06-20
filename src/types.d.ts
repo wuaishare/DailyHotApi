@@ -9,9 +9,11 @@ export interface ListItem {
   id: number | string;
   title: string;
   originalTitle?: string;
+  originalDesc?: string;
   cover?: string;
   author?: string;
   desc?: string;
+  noAutoTranslate?: boolean;
   hot: number | undefined;
   timestamp: number | undefined;
   url: string;

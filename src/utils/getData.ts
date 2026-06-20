@@ -86,8 +86,8 @@ export const get = async <T = unknown>(options: Get): Promise<RequestResult<T>> 
   const cacheKey = buildCacheKey("GET", url, params);
   logger.info(`🌐 [GET] ${url}`);
   try {
-    const cachedData = await getCache(cacheKey);
-    if (!noCache && cachedData) {
+    const cachedData = noCache ? undefined : await getCache(cacheKey);
+    if (cachedData) {
       logger.info("💾 [CHCHE] The request is cached");
       return {
         fromCache: true,
@@ -127,8 +127,8 @@ export const post = async <T = unknown>(options: Post): Promise<RequestResult<T>
   const cacheKey = buildCacheKey("POST", url, undefined, body);
   logger.info(`🌐 [POST] ${url}`);
   try {
-    const cachedData = await getCache(cacheKey);
-    if (!noCache && cachedData) {
+    const cachedData = noCache ? undefined : await getCache(cacheKey);
+    if (cachedData) {
       logger.info("💾 [CHCHE] The request is cached");
       return { fromCache: true, updateTime: cachedData.updateTime, data: cachedData.data as T };
     }
